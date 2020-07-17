@@ -47,54 +47,35 @@ void		perimetr(t_filler *fil)
 	}
 }
 
-//void		make_clean(t_filler *fil)
-//{
-//	int		i;
-//
-//	i = 0;
-//	while (fil->y_map - ++i >= 0)
-//		free(fil->map[fil->y_map - i]);
-////	free(fil->map);
-//	i = 0;
-//	while (fil->y_int_map - ++i >= 0)
-//		free(fil->int_map[fil->y_map - i]);
-////	free(fil->int_map);
-//	i = 0;
-//	while (fil->y_figura - ++i >= 0)
-//		free(fil->figura[fil->y_figura - i]);
-////	free(fil->figura);
-//	i = 0;
-//	while (fil->y_int_figura - ++i >= 0)
-//		free(fil->int_figura[fil->y_figura - i]);
-////	free(fil->int_figura);
-//}
+int			sokr_str_int_clear(t_filler *fil, int len)
+{
+	if (fil->er_flag > 3)
+		fil->y_int_figura = len;
+	else if (fil->er_flag > 2)
+		fil->y_int_map = len;
+	make_clean(fil);
+	return (0);
+}
 
-void		make_clean(t_filler *fil)
+int			make_clean(t_filler *fil)
+{
+	clear_error((void **)fil->map, fil->y_map);
+	if (fil->er_flag > 1)
+		clear_error((void **)fil->figura, fil->y_figura);
+	if (fil->er_flag > 2)
+		clear_error((void **)fil->int_map, fil->y_int_map);
+	if (fil->er_flag > 3)
+		clear_error((void **)fil->int_figura, fil->y_int_figura);
+	return (0);
+}
+
+int			clear_error(void **g, int x)
 {
 	int		i;
 
-	i = 1;
-	while (fil->y_map - i >= 0)
-	{
-		free(fil->map[fil->y_map - i]);
-		free(fil->int_map[fil->y_map - i]);
-		i++;
-	}
-	i = 1;
-	while (fil->y_figura - i >= 0)
-	{
-		free(fil->figura[fil->y_figura - i]);
-		free(fil->int_figura[fil->y_figura - i]);
-		i++;
-	}
-}
-
-int			player(t_filler *fil)
-{
-	char	*line;
-
-	get_next_line(0, &line);
-	fil->player = line[10] - 48;
-	ft_strdel(&line);
+	i = 0;
+	while (x - ++i >= 0)
+		free(g[x - i]);
+	free(g);
 	return (0);
 }

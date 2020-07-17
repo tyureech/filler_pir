@@ -18,6 +18,7 @@ SRC = fill_numbers.c \
 LIBFT_DIR = libft
 LIBS = libft/libft.a
 HEADERS = filler.h
+FLAG = -Wall -Wextra -Werror
 
 all: $(NAME)
 
@@ -25,7 +26,7 @@ $(LIBS): $(LIBFT_DIR)
 	make -C $(LIBFT_DIR)
 
 $(NAME): $(SRC) $(LIBS) $(HEADERS)
-	gcc -Wall -Wextra -Werror -o $(NAME) $(SRC) $(LIBS) -I $(HEADERS)
+	gcc $(FLAG) -o $(NAME) $(SRC) $(LIBS) -I $(HEADERS)
 
 clean:
 	make clean -C $(LIBFT_DIR)

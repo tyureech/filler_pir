@@ -12,46 +12,68 @@
 
 #include "filler.h"
 
-int			filler(t_filler *fil)
+int			player(t_filler *fil)
 {
-	char *line;
+	char	*line;
 
-	while ((fil->p = get_next_line(0, &line)) > 0)
+	if ((get_next_line(0, &line)) != 1)
+		return (0);
+	if (ft_strncmp(line, "$$$ exec p", 10))
+	{
+		ft_strdel(&line);
+		return (0);
+	}
+	fil->player = line[10] - 48;
+	ft_strdel(&line);
+	return (1);
+}
+
+void		filler(t_filler *fil)
+{
+	char	*line;
+
+	fil->er_flag = 0;
+	while ((get_next_line(0, &line)) > 0)
 	{
 		if (!ft_strncmp(line, "Plateau ", 8))
-			fil->error = map(fil, line);
+		{
+			if ((fil->error = map(fil, line)) == 0)
+				break ;
+		}
 		else if (!ft_strncmp(line, "Piece ", 6))
 		{
-			fil->error = figura(fil, line);
-//			if (fil->error == 0)
-//			{
-//				make_clean(fil);
-//				return (place_output(fil, 1));
-//			}
-			fill_numbers(fil);
+			if (!figura(fil, line) || !fill_numbers(fil))
+				break ;
 			placer_int(fil);
-			place_output(fil, 0);
+			place_output(fil);
 			make_clean(fil);
 		}
 		else
 			free(line);
 	}
-	return (0);
+	if (fil->error == 0)
+		free(line);
 }
 
 int			map(t_filler *fil, char *line)
 {
 	fil->i = 0;
+	fil->er_flag++;
 	fil->y_map = ft_atoi(line + 8);
 	ft_strdel(&line);
-//	if (!(fil->map = (char **)malloc(sizeof(char *) * fil->y_map)))
-//		return (0);
+	if (!(fil->map = (char **)malloc(sizeof(char *) * fil->y_map)))
+		return (clear_error((void **)fil->map, fil->i));
 	get_next_line(0, &line);
-	ft_strdel(&line);
+	line == NULL ? line : free(line);
 	while (fil->i < fil->y_map)
 	{
 		get_next_line(0, &line);
-		fil->map[fil->i] = ft_strdup(line + 4);
+		if (!(fil->map[fil->i] = ft_strdup(line + 4)))
+		{
+			fil->y_map = fil->i + 1;
+			free(line);
+			return (make_clean(fil));
+		}
 		free(line);
 		fil->i++;
 	}
@@ -62,15 +84,24 @@ int			map(t_filler *fil, char *line)
 int			figura(t_filler *fil, char *line)
 {
 	fil->i = 0;
-
+	fil->er_flag++;
 	fil->y_figura = ft_atoi(line + 6);
 	free(line);
-//	if (!(fil->figura = (char **)malloc(sizeof(char *) * fil->y_map)))
-//		return (0);
+	if (!(fil->figura = (char **)malloc(sizeof(char *) * fil->y_map)))
+	{
+		fil->y_figura = 0;
+		return (make_clean(fil));
+	}
 	while (fil->i < fil->y_figura)
 	{
-		get_next_line(0, &line);
-		fil->figura[fil->i] = ft_strdup(line);
+		if (get_next_line(0, &line) != 1)
+			return (make_clean(fil));
+		if (!(fil->figura[fil->i] = ft_strdup(line)))
+		{
+			fil->y_figura = fil->i + 1;
+			free(line);
+			return (make_clean(fil));
+		}
 		free(line);
 		fil->i++;
 	}
@@ -78,27 +109,12 @@ int			figura(t_filler *fil, char *line)
 	return (1);
 }
 
-int			place_output(t_filler *fil, int how)
-{
-	if (how == 1)
-	{
-		fil->y_coor = 0;
-		fil->x_coor = 0;
-	}
-	ft_putnbr(fil->y_coor);
-	ft_putchar(' ');
-	ft_putnbr(fil->x_coor);
-	ft_putchar('\n');
-	return (0);
-}
-
-int			main()
+int			main(void)
 {
 	t_filler	fil;
 
-	fil.y_int_map = 0;
-	fil.y_int_figura = 0;
-	player(&fil);
+	if (!player(&fil))
+		return (0);
 	filler(&fil);
 	return (0);
 }

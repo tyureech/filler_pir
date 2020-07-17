@@ -43,14 +43,12 @@ int			result_conditions(t_filler *fil, int h, int w)
 	{
 		fil->flag = 1;
 		fil->summ_of_numbers = fil->summ;
-		fil->count_cross = fil->count;
 		fil->y_coor = h;
 		fil->x_coor = w;
 	}
 	else if (fil->summ < fil->summ_of_numbers && fil->count == 1)
 	{
 		fil->summ_of_numbers = fil->summ;
-		fil->count_cross = fil->count;
 		fil->y_coor = h;
 		fil->x_coor = w;
 	}
@@ -82,6 +80,15 @@ int			try_to_place(t_filler *fil, int h, int w)
 	return (1);
 }
 
+int			place_output(t_filler *fil)
+{
+	ft_putnbr(fil->y_coor);
+	ft_putchar(' ');
+	ft_putnbr(fil->x_coor);
+	ft_putchar('\n');
+	return (0);
+}
+
 int			placer_int(t_filler *fil)
 {
 	int		h;
@@ -92,7 +99,6 @@ int			placer_int(t_filler *fil)
 	b = 0;
 	fil->flag = 0;
 	fil->summ_of_numbers = 0;
-	fil->count_cross = 0;
 	fil->y_coor = 0;
 	fil->x_coor = 0;
 	while (h < fil->y_map - fil->y_figura + 1)

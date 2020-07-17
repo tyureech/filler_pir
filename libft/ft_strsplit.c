@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
- void		ft_word(char const **s, int *i, char c)
+void		ft_word(char const **s, int *i, char c)
 {
 	while (**s == c && **s)
 		(*s)++;
@@ -23,7 +23,7 @@
 	}
 }
 
-char			**ft_strsplit(char const *s, char c)
+char		**ft_strsplit(char const *s, char c)
 {
 	char	**ch;
 	int		j;

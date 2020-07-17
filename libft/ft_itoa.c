@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
- int		schet(int n)
+int				schet(int n)
 {
 	int				i;
 	unsigned int	res;

@@ -14,31 +14,29 @@
 
 int			make_field_int(t_filler *fil)
 {
-	int		i;
-	int		j;
-
-	j = 0;
-//	if (!(fil->int_map = (int **)malloc(sizeof(int *) * (fil->y_map))))
-//		exit(0);
+	fil->j = 0;
+	fil->er_flag++;
+	if (!(fil->int_map = (int **)malloc(sizeof(int *) * (fil->y_map))))
+		return (sokr_str_int_clear(fil, fil->j));
 	fil->y_int_map = fil->y_map;
-	while (j < fil->y_map)
+	while (fil->j < fil->y_map)
 	{
-		i = 0;
-		if (!(fil->int_map[j] = (int *)malloc(sizeof(int) * (fil->x_map))))
-			exit(0);
-		while (i < fil->x_map)
+		fil->i = 0;
+		if (!(fil->int_map[fil->j] = (int *)malloc(sizeof(int) * (fil->x_map))))
+			return (sokr_str_int_clear(fil, fil->j + 1));
+		while (fil->i < fil->x_map)
 		{
-			if (fil->map[j][i] == '.')
-				fil->int_map[j][i] = 0;
-			else if (fil->map[j][i] == 'O')
-				fil->int_map[j][i] = -1;
-			else if (fil->map[j][i] == 'X')
-				fil->int_map[j][i] = -2;
-			i++;
+			if (fil->map[fil->j][fil->i] == '.')
+				fil->int_map[fil->j][fil->i] = 0;
+			else if (fil->map[fil->j][fil->i] == 'O')
+				fil->int_map[fil->j][fil->i] = -1;
+			else if (fil->map[fil->j][fil->i] == 'X')
+				fil->int_map[fil->j][fil->i] = -2;
+			fil->i++;
 		}
-		j++;
+		fil->j++;
 	}
-	return 1;
+	return (1);
 }
 
 void		place_the_rest(t_filler *fil, int h, int w)
@@ -48,7 +46,7 @@ void		place_the_rest(t_filler *fil, int h, int w)
 	nu = 0;
 	if (h > 0)
 		if (fil->int_map[h - 1][w] > 0)
-			if (nu == 0 || fil->int_map[h - 1][w] < nu)
+			if (nu == 0)
 				nu = fil->int_map[h - 1][w];
 	if (w > 0)
 		if (fil->int_map[h][w - 1] > 0)
@@ -86,37 +84,36 @@ void		the_rest_numbers(t_filler *fil, int *flag)
 			}
 			w++;
 		}
-		w = 0;
 		h++;
 	}
 	if (count == 0)
 		*flag = 1;
 }
 
-void		fill_piece_numbers(t_filler *fil)
+int			fill_piece_numbers(t_filler *fil)
 {
-	int		h;
-	int		w;
-
-	h = 0;
-//	if (!(fil->int_figura = (int **)malloc(sizeof(int *) * (fil->y_figura))))
-//		exit(0);
-//	fil->y_int_figura = fil->y_figura;
-	while (h < fil->y_figura)
+	fil->j = 0;
+	fil->er_flag++;
+	if (!(fil->int_figura = (int **)malloc(sizeof(int *) * (fil->y_figura))))
+		return (sokr_str_int_clear(fil, fil->j));
+	fil->y_int_figura = fil->y_figura;
+	while (fil->j < fil->y_figura)
 	{
-		w = 0;
-		if (!(fil->int_figura[h] = (int *)malloc(sizeof(int) * (fil->x_map))))
-			exit(0);
-		while (w < fil->x_figura)
+		fil->i = 0;
+		if (!(fil->int_figura[fil->j] =
+				(int *)malloc(sizeof(int) * (fil->x_map))))
+			return (sokr_str_int_clear(fil, fil->j + 1));
+		while (fil->i < fil->x_figura)
 		{
-			if (fil->figura[h][w] == '.')
-				fil->int_figura[h][w] = 0;
+			if (fil->figura[fil->j][fil->i] == '.')
+				fil->int_figura[fil->j][fil->i] = 0;
 			else
-				fil->int_figura[h][w] = fil->int_my_char;
-			w++;
+				fil->int_figura[fil->j][fil->i] = fil->int_my_char;
+			fil->i++;
 		}
-		h++;
+		fil->j++;
 	}
+	return (1);
 }
 
 int			fill_numbers(t_filler *fil)
@@ -126,17 +123,15 @@ int			fill_numbers(t_filler *fil)
 
 	flag = 0;
 	kostil = 0;
-	fil->my_char = fil->player == 1 ? 'O' : 'X';
-	fil->opponent = fil->player == 1 ? 'X' : 'O';
 	fil->int_my_char = fil->player == 1 ? -1 : -2;
 	fil->int_opponent = fil->player == 1 ? -2 : -1;
-	make_field_int(fil);
+	if (!make_field_int(fil) || !fill_piece_numbers(fil))
+		return (0);
 	perimetr(fil);
 	while (flag == 0 && kostil < 100)
 	{
 		the_rest_numbers(fil, &flag);
 		kostil++;
 	}
-	fill_piece_numbers(fil);
-	return 1;
+	return (1);
 }
